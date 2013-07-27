@@ -659,7 +659,7 @@ static CCDirector *_sharedDirector = nil;
 	unsigned char *data;
 	NSUInteger data_len;
 	[self getFPSImageData:&data length:&data_len];
-	
+
 	NSData *nsdata = [NSData dataWithBytes:data length:data_len];
 	CGDataProviderRef imgDataProvider = CGDataProviderCreateWithCFData( (CFDataRef) nsdata);
 	CGImageRef imageRef = CGImageCreateWithPNGDataProvider(imgDataProvider, NULL, true, kCGRenderingIntentDefault);
