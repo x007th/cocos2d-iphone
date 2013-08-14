@@ -29,11 +29,10 @@
 
 // -----------------------------------------------------------------
 
-@implementation CCActionManager {
-    // ivars only belonging to this class
-    
-}
+@implementation CCActionManager
 
+// -----------------------------------------------------------------
+#pragma mark - create and destroy
 // -----------------------------------------------------------------
 
 +( id )actionManager {
@@ -55,14 +54,18 @@
 }
 
 // -----------------------------------------------------------------
+#pragma mark - add actions
+// -----------------------------------------------------------------
 
 -( void )addAction:( CCAction* )action target:( id )target paused:( BOOL )paused {
-    NSAssert( [ self objectForKey:action ] == nil, @"Action already added for target <%@", [ target class ] );
+    NSAssert( [ self objectForKey:action ] == nil, @"Action already added for target <%@>", [ target class ] );
     action.isPaused = paused;
     [ self setObject:target forKey:action ];
     [ action startWithTarget:target ];
 }
 
+// -----------------------------------------------------------------
+#pragma mark - get action information
 // -----------------------------------------------------------------
 
 -( CCAction* )getActionByTag:( int )tag target:( id )target {
@@ -82,6 +85,8 @@
     return( result );
 }
 
+// -----------------------------------------------------------------
+#pragma mark - control actions
 // -----------------------------------------------------------------
 
 -( void )pauseTarget:( id )target {
@@ -118,6 +123,8 @@
 }
 
 // -----------------------------------------------------------------
+#pragma mark - remove actions
+// -----------------------------------------------------------------
 
 -( void )removeAllActionsFromTarget:( id )target {
     for ( CCAction* action in [ self allKeys ] ) {
@@ -145,6 +152,9 @@
 }
 
 // -----------------------------------------------------------------
+#pragma mark - update running actions
+// -----------------------------------------------------------------
+// update should be called by the class owning the action manager
 
 -( void )update:( NSTimeInterval )ellapsed {
     for ( CCAction* action in [ self allKeys ] ) {

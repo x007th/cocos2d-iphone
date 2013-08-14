@@ -25,7 +25,11 @@
  *
  */
 
-#import <UIKit/UIKit.h>
+
+#ifdef __CC_PLATFORM_IOS
+#import <UIKit/UIKit.h>		// Needed for UIDevice
+#endif
+
 #import "CCSchedulerEntry.h"
 
 // ---------------------------------------------------------------------

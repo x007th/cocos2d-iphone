@@ -255,8 +255,7 @@ enum {
 {
 	CGPoint location = [[CCDirector sharedDirector] convertEventToGL:event];
 
-	CCMenuItem* item;
-	NSArray_FOREACH(_children, item){
+	for ( CCMenuItem* item in _children ){
 		// ignore invisible and disabled items: issue #779, #866
 		if ( [item visible] && [item isEnabled] ) {
 
