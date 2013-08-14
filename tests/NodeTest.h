@@ -64,7 +64,7 @@
 {}
 @end
 
-@interface CCArrayTest : TestDemo
+@interface NSArrayTest : TestDemo
 {}
 @end
 

@@ -767,7 +767,7 @@ Class restartAction()
 
 	NSLog(@"Before reorder--");
 	CCSprite *child;
-	CCARRAY_FOREACH(node.children,child)
+	NSArray_FOREACH(node.children,child)
 		NSLog(@"tag %i z %i",(int)child.tag,(int)child.zOrder);
 
 
@@ -779,7 +779,7 @@ Class restartAction()
 	[node sortAllChildren];
 
 	NSLog(@"After reorder--");
-	CCARRAY_FOREACH(node.children,child)
+	NSArray_FOREACH(node.children,child)
 		NSLog(@"tag %i z %i",(int)child.tag,(int)child.zOrder);
 
 }
@@ -845,7 +845,7 @@ Class restartAction()
 
 	[batchNode sortAllChildren];
 	CCSprite* child;
-	CCARRAY_FOREACH(batchNode.descendants,child) NSLog(@"tag %i",(int)child.tag);
+	NSArray_FOREACH(batchNode.descendants,child) NSLog(@"tag %i",(int)child.tag);
 
 }
 
@@ -989,7 +989,7 @@ Class restartAction()
 
 	[batchNode_ sortAllChildren];
 	//CCSprite* child;
-	//CCARRAY_FOREACH(batchNode.descendants,child) NSLog(@"tag %i",child.tag);
+	//NSArray_FOREACH(batchNode.descendants,child) NSLog(@"tag %i",child.tag);
 
 }
 

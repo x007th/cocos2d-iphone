@@ -45,6 +45,11 @@ void ccGLUniformModelViewProjectionMatrix( CCGLProgram* program )
 {
 	[self scheduleSelector:selector forTarget:target interval:interval repeat:repeat delay:delay paused:paused];
 }
+
+// TODO
+// unmark deprecations for now
+/*
+
 -(void) unscheduleAllSelectorsForTarget:(id)target
 {
 	[self unscheduleAllForTarget:target];
@@ -57,6 +62,8 @@ void ccGLUniformModelViewProjectionMatrix( CCGLProgram* program )
 {
 	[self unscheduleAll];
 }
+*/
+ 
 @end
 
 #pragma mark - ActionManager
@@ -368,29 +375,29 @@ void ccGLUniformModelViewProjectionMatrix( CCGLProgram* program )
 @implementation CCAnimate (Deprecated)
 +(id) actionWithAnimation:(CCAnimation*)animation restoreOriginalFrame:(BOOL)restoreOriginalFrame
 {
-	CCAnimation *anim = [[animation copy] autorelease];
+	CCAnimation *anim = [animation copy];
 	anim.restoreOriginalFrame = restoreOriginalFrame;
 	
-	return [[[self alloc] initWithAnimation:anim] autorelease];
+	return [[self alloc] initWithAnimation:anim];
 }
 +(id) actionWithDuration:(ccTime)duration animation:(CCAnimation*)animation restoreOriginalFrame:(BOOL)restoreOriginalFrame
 {
-	CCAnimation *anim = [[animation copy] autorelease];
+	CCAnimation *anim = [animation copy];
 	anim.restoreOriginalFrame = restoreOriginalFrame;
 	anim.delayPerUnit =  duration / animation.frames.count;
 	
-	return [[[self alloc] initWithAnimation:anim] autorelease];	
+	return [[self alloc] initWithAnimation:anim];	
 }
 -(id) initWithAnimation:(CCAnimation*)animation restoreOriginalFrame:(BOOL)restoreOriginalFrame
 {
-	CCAnimation *anim = [[animation copy] autorelease];
+	CCAnimation *anim = [animation copy];
 	anim.restoreOriginalFrame = restoreOriginalFrame;
 	
 	return [self initWithAnimation:anim];	
 }
 -(id) initWithDuration:(ccTime)duration animation:(CCAnimation*)animation restoreOriginalFrame:(BOOL)restoreOriginalFrame
 {
-	CCAnimation *anim = [[animation copy] autorelease];
+	CCAnimation *anim = [animation copy];
 	anim.restoreOriginalFrame = restoreOriginalFrame;
 	anim.delayPerUnit =  duration / animation.frames.count;
 	

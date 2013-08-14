@@ -300,7 +300,7 @@ Class restartAction()
 
 -(void) update:(ccTime)dt
 {
-	ccArray *array = batchNode.children->data;
+	NSArray *array = batchNode.children->data;
 
 	CC_PROFILER_START( [self profilerName] );
 

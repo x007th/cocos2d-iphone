@@ -30,6 +30,9 @@
 
 -(void) walkSceneGraph:(NSUInteger)level
 {
+    // TODO BIRKEMOSE
+    // removed until V3 functionality ready
+    /*
 	char buf[64];
 	NSUInteger i=0;
 	for( i=0; i<level+1; i++)
@@ -41,7 +44,7 @@
 		
 		[self sortAllChildren];
 		
-		ccArray *arrayData = _children->data;
+		NSArray *arrayData = _children->data;
 		i = 0;
 		
 		// draw children zOrder < 0
@@ -64,7 +67,7 @@
 		
 	} else
 		NSLog(@"walk tree: %s> %@ %p", buf, self, self);
-	
+	*/
 }
 @end
 

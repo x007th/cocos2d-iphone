@@ -25,44 +25,67 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-#import "CCAction.h"
+#import "CCSchedulerEntry.h"
+#import "CCScheduler.h"
+#import <objc/message.h>
 
 // ---------------------------------------------------------------------
 
-@interface CCActionManager : NSMutableDictionary
+@implementation CCSchedulerEntry
 
 // ---------------------------------------------------------------------
 
-+( id )actionManager;
--( id )init;
+-( void )reset {
+    
+    _isExpired = NO;
+    _ellapsed = 0;
+    _lastTickTime = 0;
+    _nextTickTime = _startDelay;
+    _tickCount = 0;
+    _runtime = 0;
 
--( void )addAction:( CCAction* )action target:( id )target paused:( BOOL )paused;
+}
 
--( CCAction* )getActionByTag:( int )tag target:( id )target;
--( int )numberOfRunningActionsInTarget:( id )target;
+// ---------------------------------------------------------------------
 
--( void )pauseTarget:( id )target;
--( NSSet* )pauseAllRunningActions;
+-( void )update:( NSTimeInterval )ellapsed {
+    
+    // check for paused or expired
+    if ( ( _isPaused == YES ) || ( _isExpired == YES ) ) return;
+    
+    // increment runtime, and check if ready for next tick
+    _runtime += ellapsed;
+    if ( _runtime < _nextTickTime ) return;
+    
+    // calculate ellapsed and perform block or selector
+    // this is done to prevent ARC warnings
+    _ellapsed = _runtime - _lastTickTime;
+    objc_msgSend( _target, _selector, _ellapsed, nil );
+    
+    // set up new tick timing
+    _lastTickTime = _runtime;
+    if ( _interval > 0 ) {
+        _nextTickTime += _interval;
+        
+        // make sure that ticks can be maintained
+        NSAssert( _nextTickTime >= _lastTickTime, @"Selector <%@> for target <%@>, can not maintain update interval of <%.3f Sec>", NSStringFromSelector( _selector ), [ _target class ], _interval );
+    }
+    
+    // increment tick counter
+    _tickCount ++;
+    
+    // check for repeat
+    if ( _repeat != CCSchedulerForever ) {
+        
+        // check for scheduler expired
+        if ( _tickCount >= _repeat ) _isExpired = YES;
+    }
 
--( void )resumeTarget:( id )target;
--( void )resumeTargets:( NSSet* )targetsToResume;
-
--( void )removeAllActionsFromTarget:( id )target;
--( void )removeAction:( CCAction* )action;
--( void )removeActionByTag:( int )tag target:( id )target;
--( void )removeAllActions;
-
--( void )update:( NSTimeInterval )ellapsed;
+}
 
 // ---------------------------------------------------------------------
 
 @end
-
-
-
-
-
 
 
 

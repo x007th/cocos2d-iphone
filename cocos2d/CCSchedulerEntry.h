@@ -26,50 +26,41 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "CCAction.h"
 
 // ---------------------------------------------------------------------
 
-@interface CCActionManager : NSMutableDictionary
+@interface CCSchedulerEntry : NSObject
 
 // ---------------------------------------------------------------------
 
-+( id )actionManager;
--( id )init;
+// setup properties
+@property ( nonatomic, strong ) id target;                              // target of the scheduled event
+@property ( nonatomic ) SEL selector;                                   // selector
+@property ( nonatomic ) float interval;                                 // interval between events
+@property ( nonatomic ) float startDelay;                               // startdelay before first tick
+@property ( nonatomic ) BOOL isPaused;                                  // is currently paused
+@property ( nonatomic ) uint repeat;                                    // times to repeat the event
+@property ( nonatomic ) int priority;                                   // used for sorting
+@property ( nonatomic ) BOOL removeAfterCompletion;                     // remove scheduler entry after completion
 
--( void )addAction:( CCAction* )action target:( id )target paused:( BOOL )paused;
+// control properties
+@property ( nonatomic ) BOOL isExpired;                                 // has expired
 
--( CCAction* )getActionByTag:( int )tag target:( id )target;
--( int )numberOfRunningActionsInTarget:( id )target;
+// readonly properties
+@property ( nonatomic, readonly ) float ellapsed;                       // ellapsed since last tick
+@property ( nonatomic, readonly ) float lastTickTime;                   // last tick time ( used to calculate ellapsed )
+@property ( nonatomic, readonly ) float nextTickTime;                   // next tick time
+@property ( nonatomic, readonly ) uint tickCount;                       // tick counter
+@property ( nonatomic, readonly ) float runtime;                        // total runtime
 
--( void )pauseTarget:( id )target;
--( NSSet* )pauseAllRunningActions;
+// ---------------------------------------------------------------------
 
--( void )resumeTarget:( id )target;
--( void )resumeTargets:( NSSet* )targetsToResume;
-
--( void )removeAllActionsFromTarget:( id )target;
--( void )removeAction:( CCAction* )action;
--( void )removeActionByTag:( int )tag target:( id )target;
--( void )removeAllActions;
-
+-( void )reset;
 -( void )update:( NSTimeInterval )ellapsed;
 
 // ---------------------------------------------------------------------
 
 @end
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

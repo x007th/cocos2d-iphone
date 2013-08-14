@@ -34,7 +34,6 @@
 #import "ccConfig.h"
 #import "ccMacros.h"
 #import "Support/CGPointExtension.h"
-#import "Support/ccCArray.h"
 #import "Support/TransformUtils.h"
 #import "ccMacros.h"
 #import "CCGLProgram.h"
@@ -97,7 +96,7 @@ static NSUInteger globalOrderOfArrival = 1;
 
 +(id) node
 {
-	return [[[self alloc] init] autorelease];
+	return [[self alloc] init];
 }
 
 -(id) init
@@ -176,21 +175,12 @@ static NSUInteger globalOrderOfArrival = 1;
 {
 	CCLOGINFO( @"cocos2d: deallocing %@", self);
 
-	[_actionManager release];
-	[_scheduler release];
-	[_camera release];
-	[_grid release];
-	[_shaderProgram release];
-	[_userObject release];
 
 	// children
-	CCNode *child;
-	CCARRAY_FOREACH(_children, child)
+	for ( CCNode *child in _children )
 		child.parent = nil;
 
-	[_children release];
 
-	[super dealloc];
 }
 
 #pragma mark Setters
@@ -312,7 +302,7 @@ static NSUInteger globalOrderOfArrival = 1;
 
 -(void) childrenAlloc
 {
-	_children = [[CCArray alloc] initWithCapacity:4];
+	_children = [ NSMutableArray array ];
 }
 
 // camera: lazy alloc
@@ -336,8 +326,7 @@ static NSUInteger globalOrderOfArrival = 1;
 {
 	NSAssert( aTag != kCCNodeTagInvalid, @"Invalid tag");
 
-	CCNode *node;
-	CCARRAY_FOREACH(_children, node){
+	for ( CCNode *node in _children ) {
 		if( node.tag == aTag )
 			return node;
 	}
@@ -437,8 +426,7 @@ static NSUInteger globalOrderOfArrival = 1;
 -(void) removeAllChildrenWithCleanup:(BOOL)cleanup
 {
 	// not using detachChild improves speed here
-	CCNode *c;
-	CCARRAY_FOREACH(_children, c)
+	for ( CCNode *c in _children )
 	{
 		// IMPORTANT:
 		//  -1st do onExit
@@ -492,7 +480,7 @@ static NSUInteger globalOrderOfArrival = 1;
 {
 	_isReorderChildDirty=YES;
 
-	ccArrayAppendObjectWithResize(_children->data, child);
+    [ _children addObject:child ];
 	[child _setZOrder:z];
 }
 
@@ -510,24 +498,35 @@ static NSUInteger globalOrderOfArrival = 1;
 {
 	if (_isReorderChildDirty)
 	{
+        
+        // TODO_BIRKEMOSE
+        // sort _children according to child.zOrder
+        
+        
+        /*
+        
 		NSInteger i,j,length = _children->data->num;
-		CCNode ** x = _children->data->arr;
+		void ** x = ( void *)_children->data->arr;
 		CCNode *tempItem;
 
 		// insertion sort
 		for(i=1; i<length; i++)
 		{
-			tempItem = x[i];
+			tempItem = (__bridge  CCNode *)(x[i]);
 			j = i-1;
 
 			//continue moving element downwards while zOrder is smaller or when zOrder is the same but mutatedIndex is smaller
-			while(j>=0 && ( tempItem.zOrder < x[j].zOrder || ( tempItem.zOrder== x[j].zOrder && tempItem.orderOfArrival < x[j].orderOfArrival ) ) )
+			while(j>=0 && ( tempItem.zOrder < ( (__bridge   CCNode* )x[j] ).zOrder ||
+                           ( tempItem.zOrder== ( (__bridge   CCNode* )x[j] ).zOrder && tempItem.orderOfArrival < ( (__bridge  CCNode* )x[j] ).orderOfArrival ) ) )
 			{
 				x[j+1] = x[j];
 				j = j-1;
 			}
-			x[j+1] = tempItem;
+			x[j+1] = (__bridge void *)(tempItem);
 		}
+         
+        */
+         
 
 		//don't need to check children recursively, that's done in visit of each child
 
@@ -543,6 +542,8 @@ static NSUInteger globalOrderOfArrival = 1;
 
 -(void) visit
 {
+    BOOL selfDrawn = NO;
+    
 	// quick return if not visible. children won't be drawn.
 	if (!_visible)
 		return;
@@ -557,28 +558,16 @@ static NSUInteger globalOrderOfArrival = 1;
 	if(_children) {
 
 		[self sortAllChildren];
-
-		ccArray *arrayData = _children->data;
-		NSUInteger i = 0;
-
-		// draw children zOrder < 0
-		for( ; i < arrayData->num; i++ ) {
-			CCNode *child = arrayData->arr[i];
-			if ( [child zOrder] < 0 )
-				[child visit];
-			else
-				break;
-		}
-
-		// self draw
-		[self draw];
-
-		// draw children zOrder >= 0
-		for( ; i < arrayData->num; i++ ) {
-			CCNode *child =  arrayData->arr[i];
-			[child visit];
-		}
-
+        
+        // draw children, draw self if zOrder > 0
+        for ( CCNode* child in _children ) {
+            if ( ( selfDrawn == NO ) && ( child.zOrder >= 0 ) ) {
+                [ self draw ];
+                selfDrawn = YES;
+            }
+            [ child visit ];
+        }
+        
 	} else
 		[self draw];
 
@@ -664,9 +653,8 @@ static NSUInteger globalOrderOfArrival = 1;
 {
 	if( actionManager != _actionManager ) {
 		[self stopAllActions];
-		[_actionManager release];
 
-		_actionManager = [actionManager retain];
+		_actionManager = actionManager;
 	}
 }
 
@@ -716,9 +704,8 @@ static NSUInteger globalOrderOfArrival = 1;
 {
 	if( scheduler != _scheduler ) {
 		[self unscheduleAllSelectors];
-		[_scheduler release];
 
-		_scheduler = [scheduler retain];
+		_scheduler = scheduler;
 	}
 }
 
@@ -734,12 +721,14 @@ static NSUInteger globalOrderOfArrival = 1;
 
 -(void) scheduleUpdateWithPriority:(NSInteger)priority
 {
-	[_scheduler scheduleUpdateForTarget:self priority:priority paused:!_isRunning];
+    [ _scheduler scheduleSelector:@selector( update: ) forTarget:self interval:CCSchedulerEachFrame repeat:CCSchedulerForever delay:0 paused:!_isRunning ];
+	// [_scheduler scheduleUpdateForTarget:self priority:priority paused:!_isRunning];
 }
 
 -(void) unscheduleUpdate
 {
-	[_scheduler unscheduleUpdateForTarget:self];
+    [ _scheduler unscheduleSelector:@selector( update: ) forTarget:self ];
+	// [_scheduler unscheduleUpdateForTarget:self];
 }
 
 -(void) schedule:(SEL)selector
@@ -776,17 +765,20 @@ static NSUInteger globalOrderOfArrival = 1;
 
 -(void) unscheduleAllSelectors
 {
-	[_scheduler unscheduleAllForTarget:self];
+    [ _scheduler unscheduleAllSelectorsForTarget:self ];
+	// [_scheduler unscheduleAllForTarget:self];
 }
 - (void) resumeSchedulerAndActions
 {
-	[_scheduler resumeTarget:self];
+    [ _scheduler resumeAllSelectorsForTarget:self ];
+	// [_scheduler resumeTarget:self];
 	[_actionManager resumeTarget:self];
 }
 
 - (void) pauseSchedulerAndActions
 {
-	[_scheduler pauseTarget:self];
+    [ _scheduler pauseAllSelectorsForTarget:self ];
+	// [_scheduler pauseTarget:self];
 	[_actionManager pauseTarget:self];
 }
 
@@ -982,8 +974,7 @@ static NSUInteger globalOrderOfArrival = 1;
 	_displayedOpacity = _realOpacity * parentOpacity/255.0;
 	
     if (_cascadeOpacityEnabled) {
-        id<CCRGBAProtocol> item;
-        CCARRAY_FOREACH(_children, item) {
+        for ( id<CCRGBAProtocol> item in _children ) {
             if ([item conformsToProtocol:@protocol(CCRGBAProtocol)]) {
                 [item updateDisplayedOpacity:_displayedOpacity];
             }
@@ -1020,8 +1011,7 @@ static NSUInteger globalOrderOfArrival = 1;
 	_displayedColor.b = _realColor.b * parentColor.b/255.0;
 
     if (_cascadeColorEnabled) {
-        id<CCRGBAProtocol> item;
-        CCARRAY_FOREACH(_children, item) {
+        for ( id<CCRGBAProtocol> item in _children ) {
             if ([item conformsToProtocol:@protocol(CCRGBAProtocol)]) {
                 [item updateDisplayedColor:_displayedColor];
             }

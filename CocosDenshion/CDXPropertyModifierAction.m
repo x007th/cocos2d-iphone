@@ -28,18 +28,14 @@
 
 +(id) actionWithDuration:(ccTime)t modifier:(CDPropertyModifier*) aModifier;
 {
-	return [[[self alloc] initWithDuration:t modifier:aModifier] autorelease];
+	return [[self alloc] initWithDuration:t modifier:aModifier];
 }
 
 -(id) initWithDuration:(ccTime)t modifier:(CDPropertyModifier*) aModifier;
 {
 	if( (self=[super initWithDuration: t]) ) {
 		//Release the previous modifier
-		if (modifier) {
-			[modifier release];
-		}
 		modifier = aModifier;
-		[modifier retain];
 		//lastSetValue = [modifier _getTargetProperty];//Issue 1304
 	}
 	return self;
@@ -55,8 +51,6 @@
 
 -(void) dealloc {
 	CDLOG(@"Denshon::CDXPropertyModifierAction deallocated %@",self);
-	[modifier release];
-	[super dealloc];
 }
 
 -(id) copyWithZone: (NSZone*) zone
@@ -84,7 +78,7 @@
 	[fader setStopTargetWhenComplete:stop];
 	//Create a property modifier action to wrap the fader
 	CDXPropertyModifierAction* action = [CDXPropertyModifierAction actionWithDuration:t modifier:fader];
-	[fader release];//Action will retain
+	//Action will retain
 
 	CCDirector *director = [CCDirector sharedDirector];
 	[[director actionManager] addAction:action target:se paused:NO];
@@ -96,7 +90,7 @@
 	[fader setStopTargetWhenComplete:stop];
 	//Create a property modifier action to wrap the fader
 	CDXPropertyModifierAction* action = [CDXPropertyModifierAction actionWithDuration:t modifier:fader];
-	[fader release];//Action will retain
+	//Action will retain
 
 	CCDirector *director = [CCDirector sharedDirector];
 	[[director actionManager] addAction:action target:effect paused:NO];
@@ -111,7 +105,7 @@
 	[fader setStopTargetWhenComplete:stop];
 	//Create a property modifier action to wrap the fader
 	CDXPropertyModifierAction* action = [CDXPropertyModifierAction actionWithDuration:t modifier:fader];
-	[fader release];//Action will retain
+	//Action will retain
 
 	CCDirector *director = [CCDirector sharedDirector];
 	[[director actionManager] addAction:action target:player paused:NO];

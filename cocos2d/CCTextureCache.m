@@ -36,7 +36,7 @@
 
 #import "Support/CCFileUtils.h"
 #import "Support/NSThread+performBlock.h"
-
+#import <objc/message.h>
 
 #ifdef __CC_PLATFORM_MAC
 #import "Platforms/Mac/CCDirectorMac.h"
@@ -73,14 +73,13 @@ static CCTextureCache *sharedTextureCache;
 
 +(void)purgeSharedTextureCache
 {
-	[sharedTextureCache release];
 	sharedTextureCache = nil;
 }
 
 -(id) init
 {
 	if( (self=[super init]) ) {
-		_textures = [[NSMutableDictionary dictionaryWithCapacity: 10] retain];
+		_textures = [NSMutableDictionary dictionaryWithCapacity: 10];
 
 		// init "global" stuff
 		_loadingQueue = dispatch_queue_create("org.cocos2d.texturecacheloading", NULL);
@@ -128,15 +127,12 @@ static CCTextureCache *sharedTextureCache;
 	CCLOGINFO(@"cocos2d: deallocing %@", self);
 
 	dispatch_sync(_dictQueue, ^{
-		[_textures release];
 	});
-	[_auxGLcontext release];
 	_auxGLcontext = nil;
 	sharedTextureCache = nil;
 	dispatch_release(_loadingQueue);
 	dispatch_release(_dictQueue);
 
-	[super dealloc];
 }
 
 #pragma mark TextureCache - Add Images
@@ -159,7 +155,8 @@ static CCTextureCache *sharedTextureCache;
 	});
 
 	if(tex) {
-		[target performSelector:selector withObject:tex];
+        objc_msgSend( target, selector, tex );
+		// [target performSelector:selector withObject:tex];
 		return;
 	}
 
@@ -301,7 +298,6 @@ static CCTextureCache *sharedTextureCache;
 
 			UIImage *image = [[UIImage alloc] initWithContentsOfFile:fullpath];
 			tex = [[CCTexture2D alloc] initWithCGImage:image.CGImage resolutionType:resolution];
-			[image release];
 
 			if( tex ){
 				dispatch_sync(_dictQueue, ^{
@@ -312,7 +308,9 @@ static CCTextureCache *sharedTextureCache;
 			}
 
 			// autorelease prevents possible crash in multithreaded environments
-			[tex autorelease];
+            // TODO_BIRKEMOSE
+            // moved to init for ARC
+			// [tex autorelease];
 		}
 
 
@@ -370,7 +368,7 @@ static CCTextureCache *sharedTextureCache;
 		CCLOG(@"cocos2d: Couldn't add CGImage in CCTextureCache");
 	}
 
-	return [tex autorelease];
+	return tex;
 }
 
 #pragma mark TextureCache - Remove
@@ -388,7 +386,10 @@ static CCTextureCache *sharedTextureCache;
 		NSArray *keys = [_textures allKeys];
 		for( id key in keys ) {
 			id value = [_textures objectForKey:key];
-			if( [value retainCount] == 1 ) {
+            // TODO_BIRKEMOSE
+            // changed from check for retain count to check for nil for ARC
+            if ( value == nil ) {
+			// if( [value retainCount] == 1 ) {
 				CCLOG(@"cocos2d: CCTextureCache: removing unused texture: %@", key);
 				[_textures removeObjectForKey:key];
 			}
@@ -463,7 +464,7 @@ static CCTextureCache *sharedTextureCache;
 		CCLOG(@"cocos2d: Couldn't add PVRImage:%@ in CCTextureCache",path);
 	}
 
-	return [tex autorelease];
+	return tex;
 }
 
 @end
@@ -484,9 +485,11 @@ static CCTextureCache *sharedTextureCache;
 			NSUInteger bytes = tex.pixelsWide * tex.pixelsHigh * bpp / 8;
 			totalBytes += bytes;
 			count++;
-			NSLog( @"cocos2d: \"%@\"\trc=%lu\tid=%lu\t%lu x %lu\t@ %ld bpp =>\t%lu KB",
+			NSLog( @"cocos2d: \"%@\"\tid=%lu\t%lu x %lu\t@ %ld bpp =>\t%lu KB",
 				  texKey,
-				  (long)[tex retainCount],
+                  // TODO_BIRKMOSE
+                  // removed for ARC
+				  // (long)[tex retainCount],
 				  (long)tex.name,
 				  (long)tex.pixelsWide,
 				  (long)tex.pixelsHigh,

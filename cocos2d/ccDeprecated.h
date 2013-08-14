@@ -119,11 +119,11 @@ DEPRECATED_ATTRIBUTE @interface MacView : CCGLView
 // new: -(void) scheduleSelector:(SEL)selector forTarget:(id)target interval:(ccTime)interval repeat: (uint) repeat delay: (ccTime) delay paused:(BOOL)paused;
 -(void) scheduleSelector:(SEL)selector forTarget:(id)target interval:(ccTime)interval paused:(BOOL)paused repeat:(uint)repeat delay:(ccTime)delay DEPRECATED_ATTRIBUTE;
 // new: unscheduleAllForTarget
--(void) unscheduleAllSelectorsForTarget:(id)target DEPRECATED_ATTRIBUTE;
+// -(void) unscheduleAllSelectorsForTarget:(id)target DEPRECATED_ATTRIBUTE;
 // new: unscheduleAll
--(void) unscheduleAllSelectors DEPRECATED_ATTRIBUTE;
+// -(void) unscheduleAllSelectors DEPRECATED_ATTRIBUTE;
 // new: unscheduleAllWithMinPriority:
--(void) unscheduleAllSelectorsWithMinPriority:(NSInteger)minPriority DEPRECATED_ATTRIBUTE;
+// -(void) unscheduleAllSelectorsWithMinPriority:(NSInteger)minPriority DEPRECATED_ATTRIBUTE;
 @end
 
 @interface CCActionManager (Deprecated)

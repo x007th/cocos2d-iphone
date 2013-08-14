@@ -34,7 +34,7 @@ static NSString *transitions[] = {
 	@"CameraZoomTest",
 	@"CameraCenterTest",
 	@"ConvertToNode",
-	@"CCArrayTest",
+	@"NSArrayTest",
 	@"NodeOpaqueTest",
 	@"NodeNonOpaqueTest",
 };
@@ -917,9 +917,9 @@ Class restartAction()
 @end
 
 #pragma mark -
-#pragma mark CCArrayTest
+#pragma mark NSArrayTest
 
-@implementation CCArrayTest
+@implementation NSArrayTest
 
 -(id) init
 {
@@ -928,14 +928,14 @@ Class restartAction()
 		NSLog(@"\nTest 1\n");
 
 		NSArray *nsarray = [NSArray arrayWithObjects:@"one", @"two", @"three", nil];
-		CCArray *ccarray = [CCArray arrayWithNSArray:nsarray];
+		NSArray *NSArray = [NSArray arrayWithNSArray:nsarray];
 
-		NSLog(@"%@ == %@", nsarray, ccarray);
+		NSLog(@"%@ == %@", nsarray, NSArray);
 
 
 		NSLog(@"\nTest 2\n");
 
-		CCArray *copy_ccaray = [ccarray copy];
+		NSArray *copy_ccaray = [NSArray copy];
 		NSLog(@"copy: %@", copy_ccaray);
 
 		NSLog(@"\nTest 3\n");
@@ -959,7 +959,7 @@ Class restartAction()
 
 -(NSString *) title
 {
-	return @"CCArray Test";
+	return @"NSArray Test";
 }
 
 -(NSString*) subtitle

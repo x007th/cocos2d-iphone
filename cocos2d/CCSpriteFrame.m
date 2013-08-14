@@ -37,22 +37,22 @@
 
 +(id) frameWithTexture:(CCTexture2D*)texture rect:(CGRect)rect
 {
-	return [[[self alloc] initWithTexture:texture rect:rect] autorelease];
+	return [[self alloc] initWithTexture:texture rect:rect];
 }
 
 +(id) frameWithTextureFilename:(NSString*)filename rect:(CGRect)rect
 {
-	return [[[self alloc] initWithTextureFilename:filename rect:rect] autorelease];
+	return [[self alloc] initWithTextureFilename:filename rect:rect];
 }
 
 +(id) frameWithTexture:(CCTexture2D*)texture rectInPixels:(CGRect)rect rotated:(BOOL)rotated offset:(CGPoint)offset originalSize:(CGSize)originalSize
 {
-	return [[[self alloc] initWithTexture:texture rectInPixels:rect rotated:rotated offset:offset originalSize:originalSize] autorelease];
+	return [[self alloc] initWithTexture:texture rectInPixels:rect rotated:rotated offset:offset originalSize:originalSize];
 }
 
 +(id) frameWithTextureFilename:(NSString*)filename rectInPixels:(CGRect)rect rotated:(BOOL)rotated offset:(CGPoint)offset originalSize:(CGSize)originalSize
 {
-	return [[[self alloc] initWithTextureFilename:filename rectInPixels:rect rotated:rotated offset:offset originalSize:originalSize] autorelease];
+	return [[self alloc] initWithTextureFilename:filename rectInPixels:rect rotated:rotated offset:offset originalSize:originalSize];
 }
 
 -(id) initWithTexture:(CCTexture2D*)texture rect:(CGRect)rect
@@ -117,9 +117,10 @@
 - (void) dealloc
 {
 	CCLOGINFO( @"cocos2d: deallocing %@",self);
-	[_texture release];
-	[_textureFilename release];
-	[super dealloc];
+    // TODO_BIRKMOSE
+    // removed for ARC
+	//[_texture release];
+	//[_textureFilename release];
 }
 
 -(id) copyWithZone: (NSZone*) zone
@@ -165,10 +166,15 @@
 
 -(void) setTexture:(CCTexture2D *)texture
 {
+    _texture = texture;
+    // TODO_BIRKEMOSE
+    // removed for ARC
+    /*
 	if( _texture != texture ) {
 		[_texture release];
 		_texture = [texture retain];
 	}
+    */
 }
 
 -(CCTexture2D*) texture

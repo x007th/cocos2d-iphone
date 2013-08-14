@@ -28,7 +28,7 @@
 #import "CCActionInstant.h"
 #import "CCNode.h"
 #import "CCSprite.h"
-
+#import <objc/message.h>
 
 //
 // InstantAction
@@ -68,7 +68,7 @@
 
 -(CCFiniteTimeAction*) reverse
 {
-	return [[self copy] autorelease];
+	return [self copy];
 }
 @end
 
@@ -126,7 +126,7 @@
 @implementation CCFlipX
 +(id) actionWithFlipX:(BOOL)x
 {
-	return [[[self alloc] initWithFlipX:x] autorelease];
+	return [[self alloc] initWithFlipX:x];
 }
 
 -(id) initWithFlipX:(BOOL)x
@@ -162,7 +162,7 @@
 @implementation CCFlipY
 +(id) actionWithFlipY:(BOOL)y
 {
-	return [[[self alloc] initWithFlipY:y] autorelease];
+	return [[self alloc] initWithFlipY:y];
 }
 
 -(id) initWithFlipY:(BOOL)y
@@ -199,7 +199,7 @@
 @implementation CCPlace
 +(id) actionWithPosition: (CGPoint) pos
 {
-	return [[[self alloc]initWithPosition:pos]autorelease];
+	return [[self alloc]initWithPosition:pos];
 }
 
 -(id) initWithPosition: (CGPoint) pos
@@ -234,7 +234,7 @@
 
 +(id) actionWithTarget: (id) t selector:(SEL) s
 {
-	return [[[self alloc] initWithTarget: t selector: s] autorelease];
+	return [[self alloc] initWithTarget: t selector: s];
 }
 
 -(id) initWithTarget: (id) t selector:(SEL) s
@@ -256,11 +256,6 @@
 			];
 }
 
--(void) dealloc
-{
-	[_targetCallback release];
-	[super dealloc];
-}
 
 -(id) copyWithZone: (NSZone*) zone
 {
@@ -275,7 +270,8 @@
 
 -(void) execute
 {
-	[_targetCallback performSelector:_selector];
+    objc_msgSend( _targetCallback, _selector );
+	// [_targetCallback performSelector:_selector];
 }
 @end
 
@@ -288,7 +284,8 @@
 
 -(void) execute
 {
-	[_targetCallback performSelector:_selector withObject:_target];
+    objc_msgSend( _targetCallback, _selector );
+	// [_targetCallback performSelector:_selector withObject:_target];
 }
 @end
 
@@ -303,7 +300,7 @@
 
 +(id) actionWithTarget:(id)t selector:(SEL)s data:(void*)d
 {
-	return [[[self alloc] initWithTarget:t selector:s data:d] autorelease];
+	return [[self alloc] initWithTarget:t selector:s data:d];
 }
 
 -(id) initWithTarget:(id)t selector:(SEL)s data:(void*)d
@@ -326,11 +323,6 @@
 	return copy;
 }
 
--(void) dealloc
-{
-	// nothing to dealloc really. Everything is dealloc on super (CCCallFuncN)
-	[super dealloc];
-}
 
 -(void) execute
 {
@@ -343,7 +335,7 @@
 
 +(id) actionWithTarget: (id) t selector:(SEL) s object:(id)object
 {
-	return [[[self alloc] initWithTarget:t selector:s object:object] autorelease];
+	return [[self alloc] initWithTarget:t selector:s object:object];
 }
 
 -(id) initWithTarget:(id) t selector:(SEL) s object:(id)object
@@ -354,11 +346,6 @@
 	return self;
 }
 
-- (void) dealloc
-{
-	[_object release];
-	[super dealloc];
-}
 
 -(id) copyWithZone: (NSZone*) zone
 {
@@ -369,7 +356,8 @@
 
 -(void) execute
 {
-	[_targetCallback performSelector:_selector withObject:_object];
+    objc_msgSend( _targetCallback, _selector );
+	// [_targetCallback performSelector:_selector withObject:_object];
 }
 
 @end
@@ -384,7 +372,7 @@
 
 +(id) actionWithBlock:(void(^)())block
 {
-	return [[[self alloc] initWithBlock:block] autorelease];
+	return [[self alloc] initWithBlock:block];
 }
 
 -(id) initWithBlock:(void(^)())block
@@ -411,11 +399,6 @@
 	_block();
 }
 
--(void) dealloc
-{
-	[_block release];
-	[super dealloc];
-}
 
 @end
 
@@ -425,7 +408,7 @@
 
 +(id) actionWithBlock:(void(^)(CCNode *node))block
 {
-	return [[[self alloc] initWithBlock:block] autorelease];
+	return [[self alloc] initWithBlock:block];
 }
 
 -(id) initWithBlock:(void(^)(CCNode *node))block
@@ -452,11 +435,6 @@
 	_block(_target);
 }
 
--(void) dealloc
-{
-	[_block release];
-	[super dealloc];
-}
 
 @end
 
@@ -468,14 +446,14 @@
 
 +(id) actionWithBlock:(void(^)(id object))block object:(id)object
 {
-	return [[[self alloc] initWithBlock:block object:object] autorelease];
+	return [[self alloc] initWithBlock:block object:object];
 }
 
 -(id) initWithBlock:(void(^)(id object))block object:(id)object
 {
 	if ((self = [super init])) {
 		_block = [block copy];
-		_object = [object retain];
+		_object = object;
 	}
 
 	return self;
@@ -497,13 +475,6 @@
 	_block(_object);
 }
 
--(void) dealloc
-{
-	[_object release];
-	[_block release];
-
-	[super dealloc];
-}
 
 @end
 

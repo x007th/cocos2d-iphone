@@ -41,7 +41,6 @@
 #import "CCScene.h"
 #import "CCSpriteFrameCache.h"
 #import "CCTexture2D.h"
-#import "CCLabelBMFont.h"
 #import "CCLayer.h"
 #import "ccGLStateCache.h"
 #import "CCShaderCache.h"
@@ -167,7 +166,8 @@ static CCDirector *_sharedDirector = nil;
 
 		// action manager
 		_actionManager = [[CCActionManager alloc] init];
-		[_scheduler scheduleUpdateForTarget:_actionManager priority:kCCPrioritySystem paused:NO];
+        [ _scheduler scheduleSelector:@selector( update: ) forTarget:_actionManager interval:CCSchedulerEachFrame repeat:CCSchedulerForever delay:0 paused:NO ];
+		// [_scheduler scheduleUpdateForTarget:_actionManager priority:CCSchedulerSystemPriority paused:NO];
 
 		_winSizeInPixels = _winSizeInPoints = CGSizeZero;
 	}
@@ -184,18 +184,9 @@ static CCDirector *_sharedDirector = nil;
 {
 	CCLOGINFO(@"cocos2d: deallocing %@", self);
 
-	[_FPSLabel release];
-	[_SPFLabel release];
-	[_drawsLabel release];
-	[_runningScene release];
-	[_notificationNode release];
-	[_scenesStack release];
-	[_scheduler release];
-	[_actionManager release];
 
 	_sharedDirector = nil;
 
-	[super dealloc];
 }
 
 -(void) setGLDefaultValues
@@ -251,7 +242,8 @@ static CCDirector *_sharedDirector = nil;
 
 -(void) purgeCachedData
 {
-	[CCLabelBMFont purgeCachedData];
+    // TODO BIRKEMOSE
+	// [CCLabelBMFont purgeCachedData];
 	if ([_sharedDirector view])
 		[[CCTextureCache sharedTextureCache] removeUnusedTextures];
 	[[CCFileUtils sharedFileUtils] purgeCachedEntries];
@@ -315,8 +307,7 @@ static CCDirector *_sharedDirector = nil;
 #ifdef __CC_PLATFORM_IOS
 		[super setView:view];
 #endif
-		[__view release];
-		__view = [view retain];
+		__view = view;
 
 		// set size
 		_winSizeInPixels = _winSizeInPoints = CCNSSizeToCGSize( [__view bounds].size );
@@ -459,7 +450,6 @@ static CCDirector *_sharedDirector = nil;
 	[_runningScene onExitTransitionDidStart];
 	[_runningScene onExit];
 	[_runningScene cleanup];
-	[_runningScene release];
 
 	_runningScene = nil;
 	_nextScene = nil;
@@ -470,9 +460,6 @@ static CCDirector *_sharedDirector = nil;
 
 	[self stopAnimation];
 
-	[_FPSLabel release];
-	[_SPFLabel release];
-	[_drawsLabel release];
 	_FPSLabel = nil, _SPFLabel=nil, _drawsLabel=nil;
 
 	_delegate = nil;
@@ -480,7 +467,8 @@ static CCDirector *_sharedDirector = nil;
 	[self setView:nil];
 	
 	// Purge bitmap cache
-	[CCLabelBMFont purgeCachedData];
+    // TODO BIRKEMOSE
+	// [CCLabelBMFont purgeCachedData];
 
 	// Purge all managers / caches
 	ccDrawFree();
@@ -520,9 +508,8 @@ static CCDirector *_sharedDirector = nil;
 			[_runningScene cleanup];
 	}
 
-	[_runningScene release];
 
-	_runningScene = [_nextScene retain];
+	_runningScene = _nextScene;
 	_nextScene = nil;
 
 	if( ! runningIsTransition ) {
@@ -593,7 +580,6 @@ static CCDirector *_sharedDirector = nil;
 		{
 			NSString *spfstr = [[NSString alloc] initWithFormat:@"%.3f", _secondsPerFrame];
 			[_SPFLabel setString:spfstr];
-			[spfstr release];
 
 			_frameRate = _frames/_accumDt;
 			_frames = 0;
@@ -604,11 +590,9 @@ static CCDirector *_sharedDirector = nil;
 
 			NSString *fpsstr = [[NSString alloc] initWithFormat:@"%.1f", _frameRate];
 			[_FPSLabel setString:fpsstr];
-			[fpsstr release];
 			
 			NSString *draws = [[NSString alloc] initWithFormat:@"%4lu", (unsigned long)__ccNumberOfDraws];
 			[_drawsLabel setString:draws];
-			[draws release];
 		}
 
 		[_drawsLabel visit];
@@ -642,9 +626,6 @@ static CCDirector *_sharedDirector = nil;
 	
 	if( _FPSLabel && _SPFLabel ) {
 
-		[_FPSLabel release];
-		[_SPFLabel release];
-		[_drawsLabel release];
 		[textureCache removeTextureForKey:@"cc_fps_images"];
 		_FPSLabel = nil;
 		_SPFLabel = nil;
@@ -661,7 +642,7 @@ static CCDirector *_sharedDirector = nil;
 	[self getFPSImageData:&data length:&data_len];
 
 	NSData *nsdata = [NSData dataWithBytes:data length:data_len];
-	CGDataProviderRef imgDataProvider = CGDataProviderCreateWithCFData( (CFDataRef) nsdata);
+	CGDataProviderRef imgDataProvider = CGDataProviderCreateWithCFData( (__bridge   CFDataRef) nsdata);
 	CGImageRef imageRef = CGImageCreateWithPNGDataProvider(imgDataProvider, NULL, true, kCGRenderingIntentDefault);
 	texture = [textureCache addCGImage:imageRef forKey:@"cc_fps_images"];
 	CGDataProviderRelease(imgDataProvider);

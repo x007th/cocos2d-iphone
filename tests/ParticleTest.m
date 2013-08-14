@@ -1797,7 +1797,7 @@ Class restartAction()
 	
 	uint count = 0; 
 	CCNode* item;
-	CCARRAY_FOREACH(self.children, item)
+	NSArray_FOREACH(self.children, item)
 	{
 		if ([item isKindOfClass:[CCParticleSystem class]])
 		{
@@ -1847,7 +1847,7 @@ Class restartAction()
 	uint count = 0; 
 	CCNode* item;
 	CCNode* batchNode = [self getChildByTag:2];
-	CCARRAY_FOREACH(batchNode.children, item)
+	NSArray_FOREACH(batchNode.children, item)
 	{
 		if ([item isKindOfClass:[CCParticleSystem class]])
 		{
@@ -1934,7 +1934,7 @@ Class restartAction()
 	uint count = 0; 
 	CCNode* item;
 	CCNode* batchNode = [self getChildByTag:2];
-	CCARRAY_FOREACH(batchNode.children, item)
+	NSArray_FOREACH(batchNode.children, item)
 	{
 		if ([item isKindOfClass:[CCParticleSystem class]])
 		{
@@ -2069,7 +2069,7 @@ Class restartAction()
 	uint count = 0; 
 	CCNode* item;
 	CCNode* batchNode = [self getChildByTag:2];
-	CCARRAY_FOREACH(batchNode.children, item)
+	NSArray_FOREACH(batchNode.children, item)
 	{
 		if ([item isKindOfClass:[CCParticleSystem class]])
 		{

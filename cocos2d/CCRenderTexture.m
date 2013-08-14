@@ -52,18 +52,18 @@
 
 +(id)renderTextureWithWidth:(int)w height:(int)h pixelFormat:(CCTexture2DPixelFormat) format depthStencilFormat:(GLuint)depthStencilFormat
 {
-  return [[[self alloc] initWithWidth:w height:h pixelFormat:format depthStencilFormat:depthStencilFormat] autorelease];
+  return [[self alloc] initWithWidth:w height:h pixelFormat:format depthStencilFormat:depthStencilFormat];
 }
 
 // issue #994
 +(id)renderTextureWithWidth:(int)w height:(int)h pixelFormat:(CCTexture2DPixelFormat) format
 {
-	return [[[self alloc] initWithWidth:w height:h pixelFormat:format] autorelease];
+	return [[self alloc] initWithWidth:w height:h pixelFormat:format];
 }
 
 +(id)renderTextureWithWidth:(int)w height:(int)h
 {
-	return [[[self alloc] initWithWidth:w height:h pixelFormat:kCCTexture2DPixelFormat_RGBA8888 depthStencilFormat:0] autorelease];
+	return [[self alloc] initWithWidth:w height:h pixelFormat:kCCTexture2DPixelFormat_RGBA8888 depthStencilFormat:0];
 }
 
 -(id)initWithWidth:(int)w height:(int)h
@@ -143,7 +143,6 @@
 		// retained
 		self.sprite = [CCSprite spriteWithTexture:_texture];
 
-		[_texture release];
 		[_sprite setScaleY:-1];
 
 		// issue #937
@@ -169,8 +168,6 @@
 	if (_depthRenderBufffer)
 		glDeleteRenderbuffers(1, &_depthRenderBufffer);
 
-	[_sprite release];
-	[super dealloc];
 }
 
 -(void)begin
@@ -374,8 +371,7 @@
 		//! make sure all children are drawn
 		[self sortAllChildren];
 		
-		CCNode *child;
-		CCARRAY_FOREACH(_children, child) {
+		for ( CCNode* child in _children ) {
 			if( child != _sprite)
 				[child visit];
 		}
@@ -388,8 +384,7 @@
 
 #pragma mark RenderTexture - Save Image
 
--(CGImageRef) newCGImage
-{
+-( CGImageRef )newCGImage {
     NSAssert(_pixelFormat == kCCTexture2DPixelFormat_RGBA8888,@"only RGBA8888 can be saved as image");
 	
 	
@@ -488,7 +483,6 @@
 	else
 		NSAssert(NO, @"Unsupported format");
 	
-	[image release];
 
 	success = [imageData writeToFile:fullPath atomically:YES];
 
@@ -534,7 +528,7 @@
 
 	CGImageRelease( imageRef );
 
-	return [image autorelease];
+	return image;
 }
 #endif // __CC_PLATFORM_IOS
 

@@ -195,12 +195,10 @@ static CCTexture2DPixelFormat defaultAlphaPixel_format = kCCTexture2DPixelFormat
 {
 	CCLOGINFO(@"cocos2d: deallocing %@", self);
 
-	[_shaderProgram release];
 
 	if( _name )
 		ccGLDeleteTexture( _name );
 
-	[super dealloc];
 }
 
 - (NSString*) description
@@ -240,7 +238,6 @@ static CCTexture2DPixelFormat defaultAlphaPixel_format = kCCTexture2DPixelFormat
 
 	if(cgImage == NULL) {
 		CCLOG(@"cocos2d: CCTexture2D. Can't create Texture. cgImage is nil");
-		[self release];
 		return nil;
 	}
 
@@ -327,7 +324,6 @@ static CCTexture2DPixelFormat defaultAlphaPixel_format = kCCTexture2DPixelFormat
 	   CCLOGWARN(@"cocos2d: WARNING: Image (%lu x %lu) is bigger than the supported %ld x %ld",
 			 (long)textureWidth, (long)textureHeight,
 			 (long)maxTextureSize, (long)maxTextureSize);
-	   [self release];
 	   return nil;
    }
    
@@ -469,7 +465,6 @@ static CCTexture2DPixelFormat defaultAlphaPixel_format = kCCTexture2DPixelFormat
 	if( ! uifont )
     {
 		CCLOG(@"cocos2d: Texture2d: Invalid Font: %@. Verify the .ttf name", definition.fontName);
-		[self release];
 		return nil;
 	}
 
@@ -570,7 +565,6 @@ static CCTexture2DPixelFormat defaultAlphaPixel_format = kCCTexture2DPixelFormat
 	
 	if( ! context ) {
 		free(data);
-		[self release];
 		return nil;
 	}
 	
@@ -688,7 +682,6 @@ static CCTexture2DPixelFormat defaultAlphaPixel_format = kCCTexture2DPixelFormat
 
 	if( ! context ) {
 		free(data);
-		[self release];
 		return nil;
 	}
 
@@ -1076,7 +1069,6 @@ static CCTexture2DPixelFormat defaultAlphaPixel_format = kCCTexture2DPixelFormat
 
 	if( ! font ) {
 		CCLOGWARN(@"cocos2d: WARNING: Unable to load font %@", name);
-		[self release];
 		return nil;
 	}
 
@@ -1125,7 +1117,6 @@ static CCTexture2DPixelFormat defaultAlphaPixel_format = kCCTexture2DPixelFormat
 	UIFont *uifont = [UIFont fontWithName:name size:size];
 	if( ! uifont ) {
 		CCLOG(@"cocos2d: Texture2d: Invalid Font: %@. Verify the .ttf name", name);
-		[self release];
 		return nil;
 	}
 
@@ -1191,12 +1182,10 @@ static BOOL _PVRHaveAlphaPremultiplied = NO;
 			_format = pvr.format;
 
 			_hasMipmaps = ( pvr.numberOfMipmaps > 1  );
-			[pvr release];
 
 		} else {
 
 			CCLOG(@"cocos2d: Couldn't load PVR image: %@", relPath);
-			[self release];
 			return nil;
 		}
 		_resolutionType = resolution;

@@ -72,7 +72,6 @@ static CCSpriteFrameCache *_sharedSpriteFrameCache=nil;
 
 +(void)purgeSharedSpriteFrameCache
 {
-	[_sharedSpriteFrameCache release];
 	_sharedSpriteFrameCache = nil;
 }
 
@@ -96,11 +95,7 @@ static CCSpriteFrameCache *_sharedSpriteFrameCache=nil;
 {
 	CCLOGINFO(@"cocos2d: deallocing %@", self);
 
-	[_spriteFrames release];
-	[_spriteFramesAliases release];
-	[_loadedFilenames release];
 	 
-	[super dealloc];
 }
 
 #pragma mark CCSpriteFrameCache - loading sprite frames
@@ -221,7 +216,6 @@ static CCSpriteFrameCache *_sharedSpriteFrameCache=nil;
 
 		// add sprite frame
 		[_spriteFrames setObject:spriteFrame forKey:frameDictKey];
-		[spriteFrame release];
 	}
 }
 
@@ -322,7 +316,11 @@ static CCSpriteFrameCache *_sharedSpriteFrameCache=nil;
 	NSArray *keys = [_spriteFrames allKeys];
 	for( id key in keys ) {
 		id value = [_spriteFrames objectForKey:key];
-		if( [value retainCount] == 1 ) {
+        // TODO_BIRKEMOSE
+        // changed for ARC
+        if ( value == nil ) {
+		// if( [value retainCount] == 1 ) {
+            
 			CCLOG(@"cocos2d: CCSpriteFrameCache: removing unused frame: %@", key);
 			[_spriteFrames removeObjectForKey:key];
 			removed_ = YES;
